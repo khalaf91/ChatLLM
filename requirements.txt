@@ -1,0 +1,8 @@
+
+streamlit
+openai
+firebase-admin
+PyMuPDF
+pandas
+python-pptx
+Pillow

@@ -1,12 +1,10 @@
 import firebase_admin
 from firebase_admin import credentials, firestore
-import json
 import streamlit as st
 
-# Initialize Firebase Admin using secrets
+# Initialize Firebase Admin using the config from Streamlit secrets
 if not firebase_admin._apps:
-    firebase_config = json.loads(st.secrets["FIREBASE_CONFIG"])
-    cred = credentials.Certificate(firebase_config)
+    cred = credentials.Certificate(dict(st.secrets["FIREBASE_CONFIG"]))
     firebase_admin.initialize_app(cred)
 
 db = firestore.client()
@@ -20,9 +18,8 @@ def save_chat(user_id, chat_id, title, messages):
     }, merge=True)
 
 def list_chats(user_id):
-    return db.collection("users").document(user_id).collection("chats").order_by(
-        "created_at", direction=firestore.Query.DESCENDING
-    ).stream()
+    return db.collection("users").document(user_id).collection("chats") \
+        .order_by("created_at", direction=firestore.Query.DESCENDING).stream()
 
 def get_chat(user_id, chat_id):
     doc_ref = db.collection("users").document(user_id).collection("chats").document(chat_id)

@@ -1,61 +1,42 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Login - ChatLLM by Mr. K</title>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-    <style>
-      body {
-        font-family: sans-serif;
-        text-align: center;
-        margin-top: 100px;
-      }
-      button {
-        padding: 10px 20px;
-        font-size: 16px;
-      }
-      #tokenOutput {
-        margin-top: 20px;
-        word-break: break-all;
-        background: #f9f9f9;
-        padding: 10px;
-        border: 1px solid #ddd;
-      }
-    </style>
-  </head>
-  <body>
-    <h2>🔐 Sign in to ChatLLM by Mr. K</h2>
-    <button onclick="googleLogin()">Sign in with Google</button>
-    <p><strong>Copy this token and paste it in the Streamlit app.</strong></p>
-    <div id="tokenOutput">Your ID token will appear here...</div>
+<head>
+  <title>Login - ChatLLM by Mr. K</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+</head>
+<body>
+  <h2>Sign in to ChatLLM by Mr. K</h2>
+  <button onclick="googleLogin()">Sign in with Google</button>
+  <p><strong>Your Firebase ID Token (paste into Streamlit app):</strong></p>
+  <textarea id="tokenOutput" rows="6" cols="60" readonly></textarea>
 
-    <script>
-      // Firebase configuration
-      const firebaseConfig = {
-        apiKey: "AIzaSyCL86h58Js45ZR4y3uOvRzyRLHNywTTpXs",
-        authDomain: "chatllm-by-mr-k.firebaseapp.com",
-        projectId: "chatllm-by-mr-k",
-        storageBucket: "chatllm-by-mr-k.appspot.com",
-        messagingSenderId: "912947847110",
-        appId: "1:912947847110:web:abdddc207c39597eb05cc7"
-      };
+  <script>
+    // Your Firebase config — replace with your actual Firebase project config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCL86h58Js45ZR4y3uOvRzyRLHNywTTpXs",
+      authDomain: "chatllm-by-mr-k.firebaseapp.com",
+      projectId: "chatllm-by-mr-k",
+      storageBucket: "chatllm-by-mr-k.firebasestorage.app",
+      messagingSenderId: "912947847110",
+      appId: "1:912947847110:web:abdddc207c39597eb05cc7"
+    };
 
-      // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
-      const auth = firebase.auth();
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
-      async function googleLogin() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        try {
-          const result = await auth.signInWithPopup(provider);
-          const token = await result.user.getIdToken();
-          document.getElementById("tokenOutput").innerText = token;
-        } catch (error) {
-          console.error("Login failed", error);
-          alert("Login failed. Check console for details.");
-        }
+    async function googleLogin() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      try {
+        const result = await auth.signInWithPopup(provider);
+        const token = await result.user.getIdToken();
+        document.getElementById("tokenOutput").value = token;
+      } catch (error) {
+        console.error("Login failed", error);
+        alert("Login failed. Check the console for details.");
       }
-    </script>
-  </body>
+    }
+  </script>
+</body>
 </html>

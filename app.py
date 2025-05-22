@@ -1,16 +1,15 @@
 import streamlit as st
 import openai
 from firebase_admin import auth
-from uuid import uuid4
 from chat_ops import save_chat, list_chats, get_chat, delete_chat
+from uuid import uuid4
 
-# Set page config
 st.set_page_config(page_title="ChatLLM by Mr. K", layout="wide")
 
-# Load OpenAI API Key from Streamlit secrets
+# Load OpenAI API key from Streamlit secrets
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-# --- Sidebar Login ---
+# --- Sidebar Login Interface ---
 st.sidebar.title("🔐 User Login")
 st.sidebar.markdown("1. [Open Login Page](firebase_login.html) and sign in with Google.")
 token_input = st.sidebar.text_area("2. Paste Firebase ID Token here:", height=100)
@@ -28,7 +27,7 @@ if verify_button and token_input:
     except Exception as e:
         st.sidebar.error(f"❌ Token verification failed: {str(e)}")
 
-# --- Chat Interface ---
+# --- Main Chat Interface ---
 if user_id:
     st.title("💬 ChatLLM by Mr. K")
 
@@ -41,25 +40,22 @@ if user_id:
 
     prompt = st.chat_input("Ask anything...")
     if prompt:
-        # Show user input
         st.chat_message("user").markdown(prompt)
         st.session_state.messages.append({"role": "user", "content": prompt})
 
-        # Generate assistant reply
         with st.chat_message("assistant"):
             response = openai.ChatCompletion.create(
-                model="gpt-4-1106-preview",  # or "gpt-4o" if you have access
+                model="gpt-4o-mini",
                 messages=st.session_state.messages
             )
             reply = response.choices[0].message.content
             st.markdown(reply)
 
-        # Save assistant reply
         st.session_state.messages.append({"role": "assistant", "content": reply})
 
-        # Save the chat to Firestore
+        # Save chat session
         chat_id = "chat_" + str(uuid4())[:8]
-        save_chat(chat_id, prompt, reply)
+        save_chat(user_id, chat_id, title="Chat Session", messages=st.session_state.messages)
 
 else:
     st.warning("⚠️ Please log in with your Google account to use ChatLLM.")

@@ -9,7 +9,7 @@ st.set_page_config(page_title="ChatLLM by Mr. K", layout="wide")
 # Load OpenAI API key from Streamlit secrets
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-# --- Sidebar Login Interface ---
+# Sidebar login UI
 st.sidebar.title("🔐 User Login")
 st.sidebar.markdown("1. [Open Login Page](firebase_login.html) and sign in with Google.")
 token_input = st.sidebar.text_area("2. Paste Firebase ID Token here:", height=100)
@@ -27,17 +27,20 @@ if verify_button and token_input:
     except Exception as e:
         st.sidebar.error(f"❌ Token verification failed: {str(e)}")
 
-# --- Main Chat Interface ---
+# Main chat interface
 if user_id:
     st.title("💬 ChatLLM by Mr. K")
 
+    # Load chat history from session or initialize
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
+    # Display previous messages
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
 
+    # Chat input box
     prompt = st.chat_input("Ask anything...")
     if prompt:
         st.chat_message("user").markdown(prompt)
@@ -53,7 +56,7 @@ if user_id:
 
         st.session_state.messages.append({"role": "assistant", "content": reply})
 
-        # Save chat session
+        # Save chat to Firestore
         chat_id = "chat_" + str(uuid4())[:8]
         save_chat(user_id, chat_id, title="Chat Session", messages=st.session_state.messages)
 
